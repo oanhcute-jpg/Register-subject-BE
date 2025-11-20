@@ -1,0 +1,90 @@
+package com.controller;
+
+
+import com.entity.SubjectEntity;
+import com.entity.SubjectRegisterEntity;
+import com.entity.User;
+import com.model.RegisterSubject;
+import com.model.SubjectResp;
+import com.service.SubjectService;
+import com.util.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/subject")
+@CrossOrigin(origins = "http://localhost:4200")
+public class SubjectController {
+    @Autowired
+    private JwtUtil jwtUtil;
+    @Autowired
+    private SubjectService subjectService;
+
+
+    @PostMapping("/add")
+    public ResponseEntity<SubjectEntity> addSubject(@RequestBody SubjectEntity subjectEntity) {
+        SubjectEntity subjectEntitySave = subjectService.addSubject(subjectEntity);
+        return ResponseEntity.status(HttpStatus.CREATED).body(subjectEntitySave);
+    }
+
+    @DeleteMapping("/delete/{subjectId}")
+    public ResponseEntity<?> addSubject(@PathVariable Long subjectId) {
+        subjectService.deleteById(subjectId);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Thành công");
+    }
+
+    @PostMapping("/delete/register-subject")
+    public ResponseEntity<String> deleteRegisterSubject(@RequestBody SubjectRegisterEntity subjectEntity) {
+        subjectService.deleteRegisterSubjectById(subjectEntity.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body("success");
+    }
+
+    @PostMapping("/register-subject")
+    public ResponseEntity<String> addSubject(HttpServletRequest request, @RequestBody SubjectRegisterEntity subjectEntity) {
+        User user = jwtUtil.getUserByToken(request);
+        subjectEntity.setUserCreated(user.getUsername());
+        subjectService.registerSubject(subjectEntity);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Thành công");
+    }
+
+    @GetMapping("/get/register-subject")
+    public ResponseEntity<SubjectEntity> getById(@PathVariable Long id) {
+        SubjectEntity subjectEntitySave = subjectService.getById(id);
+        // List<SubjectEntity>subjectEntities =  new ArrayList<>();
+        //  subjectEntities.add(subjectEntitySave);
+        return ResponseEntity.status(HttpStatus.CREATED).body(subjectEntitySave);
+    }
+
+    @GetMapping("/get/register-subject-all/{type}")
+    public ResponseEntity<List<RegisterSubject>> getAllEverySubject(HttpServletRequest request,@PathVariable String type) {
+        //  SubjectEntity subjectEntitySave= subjectService.getById(id);
+        User user = jwtUtil.getUserByToken(request);
+        List<RegisterSubject> subjectEntities = subjectService.getAllEvents(user,type);
+        ;
+        //  subjectEntities.add(subjectEntitySave);
+        return ResponseEntity.status(HttpStatus.CREATED).body(subjectEntities);
+    }
+
+    @GetMapping("/get/all")
+    public ResponseEntity<List<SubjectResp>> getAll() {
+        //  SubjectEntity subjectEntitySave= subjectService.getById(id);
+        List<SubjectResp> subjectEntities = subjectService.getAll();
+        ;
+        //  subjectEntities.add(subjectEntitySave);
+        return ResponseEntity.status(HttpStatus.CREATED).body(subjectEntities);
+    }
+
+    @GetMapping("/get/list-register-subject")
+    public ResponseEntity<List<SubjectResp>> listRegisterSubject(@RequestParam String dayOfWeek, @RequestParam Integer lessonStart) {
+        //  SubjectEntity subjectEntitySave= subjectService.getById(id);
+        List<SubjectResp> subjectEntities = subjectService.getRegisterSubjects(dayOfWeek, lessonStart);
+        ;
+        //  subjectEntities.add(subjectEntitySave);
+        return ResponseEntity.status(HttpStatus.CREATED).body(subjectEntities);
+    }
+}
