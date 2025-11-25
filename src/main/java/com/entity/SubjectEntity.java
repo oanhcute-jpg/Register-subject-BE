@@ -19,6 +19,8 @@ public class SubjectEntity {
     // Tên môn học (Ví dụ: Toán, Lý, Hóa)
     @Column()
     private String name;
+    @Column()
+    private Integer classPeriodNumber;
 
     // Mã môn học (VD: MATH101, PHY202)
     @Column()
