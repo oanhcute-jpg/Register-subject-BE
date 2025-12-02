@@ -33,6 +33,7 @@ public class SubjectResp {
     private String dayOfWeek;
     private Integer lessonStart;
     private Integer lessonEnd;
+    private Integer classPeriodNumber;
 
     public static SubjectResp ConvertToSubjectResp(SubjectEntity subjectEntity) {
         if (subjectEntity == null) {
