@@ -5,6 +5,7 @@ import com.entity.SubjectEntity;
 import com.entity.SubjectRegisterEntity;
 import com.entity.User;
 import com.model.RegisterSubject;
+import com.model.SubjectReq;
 import com.model.SubjectResp;
 import com.service.SubjectService;
 import com.util.JwtUtil;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/subject")
@@ -70,10 +72,10 @@ public class SubjectController {
         return ResponseEntity.status(HttpStatus.CREATED).body(subjectEntities);
     }
 
-    @GetMapping("/get/all")
-    public ResponseEntity<List<SubjectResp>> getAll() {
+    @PostMapping("/get/all")
+    public ResponseEntity<?> getAll(@RequestBody SubjectReq  subjectReq) {
         //  SubjectEntity subjectEntitySave= subjectService.getById(id);
-        List<SubjectResp> subjectEntities = subjectService.getAll();
+        Map<String,Object> subjectEntities = subjectService.getAll(subjectReq);
         ;
         //  subjectEntities.add(subjectEntitySave);
         return ResponseEntity.status(HttpStatus.CREATED).body(subjectEntities);
