@@ -4,6 +4,7 @@ import com.entity.SubjectEntity;
 import com.entity.SubjectRegisterEntity;
 import com.entity.User;
 import com.model.RegisterSubject;
+import com.model.SubjectReq;
 import com.model.SubjectResp;
 import com.repository.SubjectRegisterRepository;
 import com.repository.SubjectRepository;
@@ -16,9 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class SubjectService {
@@ -28,7 +27,18 @@ public class SubjectService {
     private SubjectRegisterRepository subjectRegisterRepository;
 
     public SubjectEntity addSubject(SubjectEntity subjectEntity) {
+        if(subjectEntity.getId() == null) {
+            subjectEntity.setIsRegister(false);
+        }
         return subjectRepository.save(subjectEntity);
+    }
+    public SubjectEntity openRegister(SubjectEntity subjectEntity) {
+        if(subjectEntity.getId() != null) {
+            com.entity.SubjectEntity subject =    subjectRepository.getById(subjectEntity.getId());
+            subject.setIsRegister(subjectEntity.getIsRegister());
+            return subjectRepository.save(subject);
+        }
+        return subjectEntity;
     }
 
     public void registerSubject(SubjectRegisterEntity subjectEntity) {
@@ -87,11 +97,18 @@ public class SubjectService {
         return registerSubjects;
     }
 
-    public List<SubjectResp> getAll() {
-        Page<SubjectEntity> subjectEntities = subjectRepository.findAllSubjects(PageRequest.of(0, 8));
+    public Map<String,Object> getAll(SubjectReq subjectReq) {
+        int pageSize =subjectRepository.findAll().size()/8;
+        if(subjectRepository.findAll().size()%8!=0) {
+            pageSize=subjectRepository.findAll().size()/8+1;
+        }
+        Page<SubjectEntity> subjectEntities = subjectRepository.findAllSubjects(PageRequest.of(subjectReq.getPage(), 8));
         List<SubjectResp> subjectResp = new ArrayList<>();
         subjectEntities.forEach(subjectEntity -> subjectResp.add(SubjectResp.ConvertToSubjectResp(subjectEntity)));
-        return subjectResp;
+        Map<String,Object> map = new HashMap<>();
+        map.put("subjectResponse",subjectResp);
+        map.put("pageSize",pageSize);
+        return map;
 
     }
 

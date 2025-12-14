@@ -34,6 +34,10 @@ public class SubjectResp {
     private Integer lessonStart;
     private Integer lessonEnd;
     private Integer classPeriodNumber;
+    private Integer page;
+    private Integer pageSize;
+    private Boolean isRegister;
+
 
     public static SubjectResp ConvertToSubjectResp(SubjectEntity subjectEntity) {
         if (subjectEntity == null) {

@@ -1,6 +1,7 @@
 package com.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -10,6 +11,7 @@ import java.util.Date;
 @Entity
 @Table(name = "subject")
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SubjectEntity {
 
     @Id
@@ -55,8 +57,10 @@ public class SubjectEntity {
     private String dayOfWeek;
     @Column()
     private Integer lessonStart;
-//    @Column()
+    @Column()
     private Integer lessonEnd;
+    @Column()
+    private Boolean isRegister;
 
 
 }
