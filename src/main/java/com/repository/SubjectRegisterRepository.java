@@ -9,6 +9,7 @@ import java.util.List;
 public interface SubjectRegisterRepository extends JpaRepository<SubjectRegisterEntity, Long> {
     public void deleteById(Long id);
     public List<SubjectRegisterEntity> findByUserCreated(String userCreated);
+    public List<SubjectRegisterEntity> findByUserCreatedAndSubjectId(String userCreated,Long subjectId);
     public void deleteBySubjectId(Long id);
     public Integer countBySubjectId(Long id);
 

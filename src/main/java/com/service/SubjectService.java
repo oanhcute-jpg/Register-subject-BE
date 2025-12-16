@@ -27,14 +27,15 @@ public class SubjectService {
     private SubjectRegisterRepository subjectRegisterRepository;
 
     public SubjectEntity addSubject(SubjectEntity subjectEntity) {
-        if(subjectEntity.getId() == null) {
+        if (subjectEntity.getId() == null) {
             subjectEntity.setIsRegister(false);
         }
         return subjectRepository.save(subjectEntity);
     }
+
     public SubjectEntity openRegister(SubjectEntity subjectEntity) {
-        if(subjectEntity.getId() != null) {
-            com.entity.SubjectEntity subject =    subjectRepository.getById(subjectEntity.getId());
+        if (subjectEntity.getId() != null) {
+            com.entity.SubjectEntity subject = subjectRepository.getById(subjectEntity.getId());
             subject.setIsRegister(subjectEntity.getIsRegister());
             return subjectRepository.save(subject);
         }
@@ -43,6 +44,20 @@ public class SubjectService {
 
     public void registerSubject(SubjectRegisterEntity subjectEntity) {
         subjectRegisterRepository.save(subjectEntity);
+    }
+    public List<SubjectRegisterEntity> findSubjectRegisterByIdAndUser(String userName,Long subjectId) {
+        return subjectRegisterRepository.findByUserCreatedAndSubjectId(userName,subjectId);
+    }
+
+   public boolean checkNumberRegister(SubjectRegisterEntity subjectRegisterEntity) {
+        Integer registerNumber = subjectRegisterRepository.countBySubjectId(subjectRegisterEntity.getSubjectId());
+        Optional<SubjectEntity> subjectEntity = subjectRepository.findById(subjectRegisterEntity.getSubjectId());
+        if (subjectEntity.isPresent()) {
+            if(registerNumber<subjectEntity.get().getStudentNumberMax()){
+                return true;
+            }
+        }
+        return false;
     }
 
     public void deleteRegisterSubjectById(Long id) {
@@ -97,23 +112,23 @@ public class SubjectService {
         return registerSubjects;
     }
 
-    public Map<String,Object> getAll(SubjectReq subjectReq) {
-        int pageSize =subjectRepository.findAll().size()/8;
-        if(subjectRepository.findAll().size()%8!=0) {
-            pageSize=subjectRepository.findAll().size()/8+1;
+    public Map<String, Object> getAll(SubjectReq subjectReq) {
+        int pageSize = subjectRepository.findAll().size() / 8;
+        if (subjectRepository.findAll().size() % 8 != 0) {
+            pageSize = subjectRepository.findAll().size() / 8 + 1;
         }
         Page<SubjectEntity> subjectEntities = subjectRepository.findAllSubjects(PageRequest.of(subjectReq.getPage(), 8));
         List<SubjectResp> subjectResp = new ArrayList<>();
         subjectEntities.forEach(subjectEntity -> subjectResp.add(SubjectResp.ConvertToSubjectResp(subjectEntity)));
-        Map<String,Object> map = new HashMap<>();
-        map.put("subjectResponse",subjectResp);
-        map.put("pageSize",pageSize);
+        Map<String, Object> map = new HashMap<>();
+        map.put("subjectResponse", subjectResp);
+        map.put("pageSize", pageSize);
         return map;
 
     }
 
     public List<SubjectResp> getRegisterSubjects(String dayOfWeek, Integer lessonStart) {
-        List<SubjectEntity> subjectEntities = subjectRepository.findAllByDayOfWeekAndLessonStart(dayOfWeek, lessonStart);
+        List<SubjectEntity> subjectEntities = subjectRepository.findAllByDayOfWeekAndLessonStartAndIsRegister(dayOfWeek, lessonStart, true);
         List<SubjectResp> subjectResp = new ArrayList<>();
         subjectEntities.forEach(subjectEntity -> subjectResp.add(SubjectResp.ConvertToSubjectResp(subjectEntity)));
         return subjectResp;

@@ -21,5 +21,6 @@ public interface SubjectRepository extends JpaRepository<SubjectEntity, Long> {
 
     //    @Query("SELECT s FROM SubjectEntity s where order by id desc")
     List<SubjectEntity> findAllByDayOfWeekAndLessonStart(String dayOfWeek, Integer lessonStart);
+    List<SubjectEntity> findAllByDayOfWeekAndLessonStartAndIsRegister(String dayOfWeek, Integer lessonStart,Boolean isRegister);
     public void deleteById(Long id);
 }

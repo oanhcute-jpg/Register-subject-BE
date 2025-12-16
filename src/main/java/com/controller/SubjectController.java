@@ -15,8 +15,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/subject")
@@ -57,11 +59,25 @@ public class SubjectController {
     }
 
     @PostMapping("/register-subject")
-    public ResponseEntity<String> addSubject(HttpServletRequest request, @RequestBody SubjectRegisterEntity subjectEntity) {
+    public ResponseEntity<?> addSubject(HttpServletRequest request, @RequestBody SubjectRegisterEntity subjectEntity) {
         User user = jwtUtil.getUserByToken(request);
         subjectEntity.setUserCreated(user.getUsername());
+        Map<String,Object> map = new HashMap<>();
+        List<SubjectRegisterEntity> subjectRegisterEntity=subjectService.findSubjectRegisterByIdAndUser(user.getUsername(),subjectEntity.getSubjectId());
+        if(subjectRegisterEntity!=null&&subjectRegisterEntity.size()>0){
+            map.put("status","error");
+            map.put("message","Bạn đã đăng kí môn này");
+            return ResponseEntity.status(HttpStatus.CREATED).body(map);
+        }
+        if(!subjectService.checkNumberRegister(subjectEntity)){
+            map.put("status","error");
+            map.put("message","Số lượng sinh viên đã đủ.");
+            return ResponseEntity.status(HttpStatus.CREATED).body(map);
+        }
+        map.put("status","Thành công");
+        map.put("message","Đăng kí thành công");
         subjectService.registerSubject(subjectEntity);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Thành công");
+        return ResponseEntity.status(HttpStatus.CREATED).body(map);
     }
 
     @GetMapping("/get/register-subject")
