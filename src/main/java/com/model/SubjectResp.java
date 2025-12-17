@@ -13,8 +13,6 @@ import java.time.LocalDate;
 
 @Data
 public class SubjectResp {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String code;
@@ -27,6 +25,7 @@ public class SubjectResp {
     private String startDate;
     private String endDate;
     private Integer studentNumberMax;
+    private Integer studentNumberNow;
     private LocalDate createdDate;
     private LocalDate updatedDate;
     private String userCreated;

@@ -45,15 +45,16 @@ public class SubjectService {
     public void registerSubject(SubjectRegisterEntity subjectEntity) {
         subjectRegisterRepository.save(subjectEntity);
     }
-    public List<SubjectRegisterEntity> findSubjectRegisterByIdAndUser(String userName,Long subjectId) {
-        return subjectRegisterRepository.findByUserCreatedAndSubjectId(userName,subjectId);
+
+    public List<SubjectRegisterEntity> findSubjectRegisterByIdAndUser(String userName, Long subjectId) {
+        return subjectRegisterRepository.findByUserCreatedAndSubjectId(userName, subjectId);
     }
 
-   public boolean checkNumberRegister(SubjectRegisterEntity subjectRegisterEntity) {
+    public boolean checkNumberRegister(SubjectRegisterEntity subjectRegisterEntity) {
         Integer registerNumber = subjectRegisterRepository.countBySubjectId(subjectRegisterEntity.getSubjectId());
         Optional<SubjectEntity> subjectEntity = subjectRepository.findById(subjectRegisterEntity.getSubjectId());
         if (subjectEntity.isPresent()) {
-            if(registerNumber<subjectEntity.get().getStudentNumberMax()){
+            if (registerNumber < subjectEntity.get().getStudentNumberMax()) {
                 return true;
             }
         }
@@ -130,7 +131,12 @@ public class SubjectService {
     public List<SubjectResp> getRegisterSubjects(String dayOfWeek, Integer lessonStart) {
         List<SubjectEntity> subjectEntities = subjectRepository.findAllByDayOfWeekAndLessonStartAndIsRegister(dayOfWeek, lessonStart, true);
         List<SubjectResp> subjectResp = new ArrayList<>();
-        subjectEntities.forEach(subjectEntity -> subjectResp.add(SubjectResp.ConvertToSubjectResp(subjectEntity)));
+        subjectEntities.forEach(subjectEntity ->{
+            Integer registerNumber = subjectRegisterRepository.countBySubjectId(subjectEntity.getId());
+            SubjectResp subjectResp1 = SubjectResp.ConvertToSubjectResp(subjectEntity);
+            subjectResp1.setStudentNumberNow(registerNumber);
+            subjectResp.add(subjectResp1)  ;
+        });
         return subjectResp;
 
     }
